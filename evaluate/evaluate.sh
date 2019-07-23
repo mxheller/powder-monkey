@@ -7,14 +7,16 @@
 # 3 or $OUTPUT    path to output folder
 # 4 or $PYRET     path to pyret folder
 # 5 or $RUNNER    path to runner
-# 6 or $PREHOOK   (optional) script to run after copying $TEST to $OUTPUT
+# 6 or $PRED_PREHOOK   (optional) script to run after copying $TEST to $OUTPUT
+# 7 or $IMPL_PREHOOK   (optional) script to run after copying $IMPL to $OUTPUT
 
 IMPL="$(realpath "${1:-$IMPL}")"
 TEST="$(realpath "${2:-$TEST}")"
 OUTPUT="${3:-$OUTPUT}"
 PYRET="$(realpath "${4:-$PYRET}")"
 RUNNER="$(realpath "${5:-$RUNNER}")"
-PREHOOK="$(realpath "${6:-$PREHOOK}" || echo "")"
+PRED_PREHOOK="$(realpath "${6:-$PRED_PREHOOK}" || echo "")"
+IMPL_PREHOOK="$(realpath "${7:-$IMPL_PREHOOK}" || echo "")"
 
 if [ ! -f "$IMPL" ]; then echo "ERROR: No such impl: $IMPL" >&2 || exit 1; fi
 if [ ! -f "$TEST" ]; then echo "ERROR: No such test: $TEST" >&2 || exit 1; fi
@@ -38,10 +40,15 @@ report_error "Unknown"
 
 # Copy tests file to results directory.
 cp "$TEST" "$OUTPUT/tests.arr"
+cp "$IMPL" "$OUTPUT/impl.arr"
 
-if [ -f "$PREHOOK" ]; then
+if [ -f "$PRED_PREHOOK" ]; then
   cd "$OUTPUT"
-  source "$PREHOOK" "$IMPL"
+  source "$PRED_PREHOOK" "$IMPL"
+fi
+if [ -f "$IMPL_PREHOOK" ]; then
+  cd "$OUTPUT"
+  source "$IMPL_PREHOOK" "$IMPL"
 fi
 
 # Compile and Execute
@@ -49,9 +56,9 @@ cd "$PYRET" || exit 1
 export NODE_PATH="$(realpath ./node_modules)"
 # Compile
 # For some reason, this is printing the absolute path to pyret-lang to stdout...
-/local/projects/node.js/current.x86_64/bin/node build/phaseA/pyret.jarr -no-display-progress                       \
-   --build-runnable   "$(realpath --relative-to=. "$OUTPUT/tests.arr")" \
-   --outfile          "$(realpath --relative-to=. "$OUTPUT")/tests.js"  \
+node build/phaseA/pyret.jarr -no-display-progress                       \
+   --build-runnable   "$(realpath --relative-to=. "$OUTPUT/impl.arr")" \
+   --outfile          "$(realpath --relative-to=. "$OUTPUT")/impl.js"  \
    --standalone-file  "$RUNNER"                                         \
    --builtin-js-dir   "src/js/trove/"                                   \
    --builtin-arr-dir  "src/arr/trove"                                   \
@@ -59,7 +66,7 @@ export NODE_PATH="$(realpath ./node_modules)"
    --require-config   "src/scripts/standalone-configA.json"             \
   >/dev/null 2>>"$OUTPUT/error.txt"
 
-if [ ! -f "$OUTPUT/tests.js" ]; then
+if [ ! -f "$OUTPUT/impl.js" ]; then
   echo "Compilation failed: $IMPL $TEST" 2>>"$OUTPUT/error.txt"
   report_error "Compilation"
   exit 0
@@ -83,17 +90,17 @@ function finish() {
   fi
   if [ ! -s "$OUTPUT/error.txt" ] ; then
     rm -f "$OUTPUT/error.txt"
-    rm -f "$OUTPUT/tests.js"
+    rm -f "$OUTPUT/impl.js"
   fi
 }
 
-trap finish EXIT
+# trap finish EXIT
 
 # Assume a timeout occurs
 report_error "Timeout"
 
 # Run
-/local/projects/node.js/current.x86_64/bin/node "$(realpath --relative-to=. "$OUTPUT")/tests.js" \
+node "$(realpath --relative-to=. "$OUTPUT")/impl.js" \
   2>>"$OUTPUT/error.txt" >"$OUTPUT/raw.json"
 
 rm -rf "$CACHE_DIR"

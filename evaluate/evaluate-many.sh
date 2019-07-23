@@ -3,9 +3,11 @@
 :>stdout.log
 :>stderr.log
 
-# 1 or $PREHOOK     (optional) script to run after copying each $TEST to $OUTPUT
+# 1 or $PRED_PREHOOK     (optional) script to run after copying each $TEST to $OUTPUT
+# 2 or $IMPL_PREHOOK     (optional) script to run after copying each $IMPL to $OUTPUT
 
-PREHOOK="$(realpath "${1:-$PREHOOK}" || echo "")"
+PRED_PREHOOK="$(realpath "${1:-$PRED_PREHOOK}" || echo "")"
+IMPL_PREHOOK="$(realpath "${1:-$IMPL_PREHOOK}" || echo "")"
 PYRET="$(realpath "$(dirname "${BASH_SOURCE[0]}")/pyret-lang")"
 RUNNER="$(dirname "${BASH_SOURCE[0]}")/runner.js"
 
@@ -31,7 +33,8 @@ function queue-test(){
        -v OUTPUT="$OUTPUT"      \
        -v PYRET="$PYRET"        \
        -v RUNNER="$RUNNER"      \
-       -v PREHOOK="$PREHOOK"    \
+       -v PRED_PREHOOK="$PRED_PREHOOK"    \
+       -v IMPL_PREHOOK="$IMPL_PREHOOK"    \
        "$(dirname "${BASH_SOURCE[0]}")/evaluate.sh" || exit 1
 }
 
