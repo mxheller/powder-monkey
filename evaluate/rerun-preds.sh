@@ -17,4 +17,4 @@ for IMPL in ${IMPLS[@]} ; do
          "$(realpath "$TEST")" \
 	 "$(realpath "result")/$(basename "$IMPL")_$(basename "$TEST")"
   done
-done | ~/Documents/powder-monkey/evaluate/evaluate-many.sh "pred_prehook.sh" "impl_prehook.sh"
+done | ~/Documents/powder-monkey/evaluate/evaluate-many.sh "pred_prehook.sh"
