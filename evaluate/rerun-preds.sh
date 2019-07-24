@@ -15,6 +15,6 @@ for IMPL in ${IMPLS[@]} ; do
   for TEST in ${TESTS[@]};  do
     echo "$(realpath "$IMPL")"  \
          "$(realpath "$TEST")" \
-         "$(realpath "result")/$(basename "$TEST")_$(basename "$IMPL").json"
+	 "$(realpath "result")/$(basename "$IMPL")_$(basename "$TEST")"
   done
 done | ~/Documents/powder-monkey/evaluate/evaluate-many.sh "pred_prehook.sh" "impl_prehook.sh"

@@ -235,7 +235,7 @@ requirejs(["pyret-base/js/runtime", "pyret-base/js/post-load-hooks", "pyret-base
     if(runtime.isSuccessResult(result)) {
       // Find values defined in import file (written by instructor for each assignment)
       process.stderr.write(`Defined modules: ${Object.keys(runtime.modules)}\n`);
-      let predicateModuleName = Object.keys(runtime.modules).find(key => key.endsWith("powder-monkey/evaluate/output/tests.arr"));
+      let predicateModuleName = Object.keys(runtime.modules).find(key => key.endsWith("tests.arr"));
       let defined = runtime.getField(runtime.modules[predicateModuleName], "defined-values");
 
       return runtime.safeCall(function() {

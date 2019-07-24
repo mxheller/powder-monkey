@@ -41,6 +41,7 @@ report_error "Unknown"
 # Copy tests file to results directory.
 cp "$TEST" "$OUTPUT/tests.arr"
 cp "$IMPL" "$OUTPUT/impl.arr"
+cp "playground.arr" "$OUTPUT/playground.arr"
 
 if [ -f "$PRED_PREHOOK" ]; then
   cd "$OUTPUT"
@@ -56,7 +57,7 @@ cd "$PYRET" || exit 1
 export NODE_PATH="$(realpath ./node_modules)"
 # Compile
 # For some reason, this is printing the absolute path to pyret-lang to stdout...
-node build/phaseA/pyret.jarr -no-display-progress                       \
+/local/projects/node.js/current.x86_64/bin/node build/phaseA/pyret.jarr -no-display-progress                       \
    --build-runnable   "$(realpath --relative-to=. "$OUTPUT/impl.arr")" \
    --outfile          "$(realpath --relative-to=. "$OUTPUT")/impl.js"  \
    --standalone-file  "$RUNNER"                                         \
@@ -100,7 +101,7 @@ function finish() {
 report_error "Timeout"
 
 # Run
-node "$(realpath --relative-to=. "$OUTPUT")/impl.js" \
+/local/projects/node.js/current.x86_64/bin/node "$(realpath --relative-to=. "$OUTPUT")/impl.js" \
   2>>"$OUTPUT/error.txt" >"$OUTPUT/raw.json"
 
 rm -rf "$CACHE_DIR"
