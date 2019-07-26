@@ -234,7 +234,6 @@ requirejs(["pyret-base/js/runtime", "pyret-base/js/post-load-hooks", "pyret-base
     // This function is *not* on the Pyret stack, so no need to pause
     if(runtime.isSuccessResult(result)) {
       // Find values defined in import file (written by instructor for each assignment)
-      process.stderr.write(`Defined modules: ${Object.keys(runtime.modules)}\n`);
       let predicateModuleName = Object.keys(runtime.modules).find(key => key.endsWith("tests.arr"));
       let defined = runtime.getField(runtime.modules[predicateModuleName], "defined-values");
 

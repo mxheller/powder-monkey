@@ -79,23 +79,13 @@ if [ "$COMP" = true ] ; then
 fi
 
 function finish() {
-  # if evaluation produced output that's valid json...
-  if [ -s "$OUTPUT/raw.json" ] &&  jq '.' "$OUTPUT/raw.json" >/dev/null ; then
-    jq \
-      --compact-output \
-      --arg IMPL "$IMPL" \
-      --arg TEST "$TEST" \
-      '{ impl: $IMPL, tests: $TEST, result: {Ok: (. |= map(select(.loc | contains("tests.arr"))))} }'  \
-      "$OUTPUT/raw.json" \
-        >"$OUTPUT/results.json" 2>>"$OUTPUT/error.txt"
-  fi
   if [ ! -s "$OUTPUT/error.txt" ] ; then
     rm -f "$OUTPUT/error.txt"
     rm -f "$OUTPUT/impl.js"
   fi
 }
 
-# trap finish EXIT
+trap finish EXIT
 
 # Assume a timeout occurs
 report_error "Timeout"
