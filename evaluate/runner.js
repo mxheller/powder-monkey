@@ -203,7 +203,6 @@ requirejs(["pyret-base/js/runtime", "pyret-base/js/post-load-hooks", "pyret-base
     // const studentContents = split[split.length - 1];
 
     return {
-      id: 999,
       // submission: studentContents,
       example_count: instances.length,
       invalid: JSON.stringify(invalidPositions.map(posToLineNumbers)),
@@ -240,7 +239,7 @@ requirejs(["pyret-base/js/runtime", "pyret-base/js/post-load-hooks", "pyret-base
       return runtime.safeCall(function() {
         return renderPredicateResults(defined, instances);
       }, function(druidResults) {
-        console.log(druidResults);
+        console.log(JSON.stringify(druidResults));
         process.exit(EXIT_SUCCESS);
       }, "runtime.drawCheckResults");
     }
