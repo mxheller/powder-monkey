@@ -24,6 +24,8 @@ for _, dirs, _ in os.walk('result'):
     cursor.executemany("UPDATE unprompted_log\
         SET example_count = %s, invalid = %s, results = %s\
         WHERE id = %s", data)
+    mydb.commit()
+    mydb.close()
 
     print("Updated {} rows!".format(len(data)))
     exit(0)
