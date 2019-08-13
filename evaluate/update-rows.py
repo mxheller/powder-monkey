@@ -15,11 +15,12 @@ for _, dirs, _ in os.walk('result'):
     data = []
     for dir in dirs:
         row_id = dir.split('row-')[1].split('_')[0]
-        print(row_id)
+        if os.path.isfile('result/{}/error.txt'.format(dir)):
+            print("ERRORED: {}".format(row_id))
+            continue
         with open('result/{}/raw.json'.format(dir), 'r') as results_file:
             parsed = json.load(results_file)
             data.append((parsed["example_count"], parsed["invalid"], parsed["results"], row_id))
-    print(data)
 
     cursor.executemany("UPDATE unprompted_log\
         SET example_count = %s, invalid = %s, results = %s\
