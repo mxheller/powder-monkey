@@ -1,6 +1,7 @@
 import json
 import sys
 import mysql.connector
+import os
 
 # Connect to database
 mydb = mysql.connector.connect(
@@ -12,8 +13,16 @@ mydb = mysql.connector.connect(
 cursor = mydb.cursor()
 
 if len(sys.argv) < 2:
-    print("Usage: ./pull-submissions <Assignment ID> <Tool>(optional)")
+    print("Usage: python3 pull-submissions.py <Assignment ID> <Tool>(optional)")
     exit(1)
+
+# Ensure directory structure exists
+if not os.path.isdir("corpus"):
+    os.makedirs("corpus")
+if not os.path.isdir("corpus/impls"):
+    os.makedirs("corpus/impls")
+if not os.path.isdir("corpus/predicates"):
+    os.makedirs("corpus/predicates")
 
 assignment = sys.argv[1]
 tool = sys.argv[2] if len(sys.argv) == 3 else None

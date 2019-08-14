@@ -14,7 +14,7 @@ cursor = mydb.cursor()
 for _, dirs, _ in os.walk('result'):
     data = []
     for dir in dirs:
-        row_id = dir.split('row-')[1].split('_')[0]
+        row_id = dir.split('row-')[1]
         if os.path.isfile('result/{}/error.txt'.format(dir)):
             print("ERRORED: {}".format(row_id))
             continue
